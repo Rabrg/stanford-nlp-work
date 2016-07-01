@@ -8,14 +8,19 @@ import java.util.List;
 
 public class SentenceDatabase {
 
-    private Connection connection;
-    private Statement statement;
+    private final Connection connection;
+
+    private final PreparedStatement selectStatement;
+    private final PreparedStatement insertStatement;
 
     public SentenceDatabase() throws SQLException {
         connection = DriverManager.getConnection("jdbc:sqlite:sentences.db");
-        statement = connection.createStatement();
-        statement.setQueryTimeout(30);
-        statement.executeUpdate("CREATE TABLE IF NOT EXISTS sentences (sentence STRING, UNIQUE(sentence));");
+
+        final Statement createStatement = connection.createStatement();
+        createStatement.executeUpdate("CREATE TABLE IF NOT EXISTS sentences (sentence STRING, UNIQUE(sentence));");
+
+        selectStatement = connection.prepareStatement("select * from sentences");
+        insertStatement = connection.prepareStatement("INSERT OR IGNORE INTO sentences('sentence') VALUES(?)");
     }
 
     public static void main(final String[] args) {
@@ -35,14 +40,15 @@ public class SentenceDatabase {
 
     public List<SubjectPredicateObject> getSentences() throws SQLException {
         final List<SubjectPredicateObject> result = new ArrayList<>();
-        final ResultSet rs = statement.executeQuery("select * from sentences");
-        while(rs.next()) {
+        final ResultSet rs = selectStatement.executeQuery();
+        while (rs.next()) {
             result.add(new SubjectPredicateObject(new Sentence(rs.getString("sentence"))));
         }
         return result;
     }
 
     public int addSentence(final String sentence) throws SQLException {
-        return statement.executeUpdate("INSERT OR IGNORE INTO sentences VALUES('" + sentence + "')");
+        insertStatement.setString(1, sentence);
+        return insertStatement.executeUpdate();
     }
 }
