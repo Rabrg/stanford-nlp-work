@@ -17,18 +17,18 @@ public class SentenceDatabase {
         connection = DriverManager.getConnection("jdbc:sqlite:sentences.db");
 
         final Statement createStatement = connection.createStatement();
-        createStatement.executeUpdate("CREATE TABLE IF NOT EXISTS sentences (sentence STRING, UNIQUE(sentence));");
+        createStatement.executeUpdate("CREATE TABLE IF NOT EXISTS sentences(sentence STRING, subjects STRING, relations STRING, objects STRING, UNIQUE(sentence));");
 
         selectStatement = connection.prepareStatement("select * from sentences");
-        insertStatement = connection.prepareStatement("INSERT OR IGNORE INTO sentences('sentence') VALUES(?)");
+        insertStatement = connection.prepareStatement("INSERT OR IGNORE INTO sentences(sentence, subjects, relations, objects) VALUES(?, ?, ?, ?)");
     }
 
     public static void main(final String[] args) {
         try {
             final SentenceDatabase database = new SentenceDatabase();
-            database.addTriple("The cat jumped over the fence");
-            database.addTriple("Grandfather left Rosalita and Raoul all his money");
-            database.addTriple("They named their daughter Natasha");
+            database.addTriple(new Triple("The cat jumped over the fence"));
+            database.addTriple(new Triple("Grandfather left Rosalita and Raoul all his money"));
+            database.addTriple(new Triple("They named their daughter Natasha"));
 
             for (final Triple object : database.getTriples()) {
                 System.out.println(object);
@@ -47,8 +47,8 @@ public class SentenceDatabase {
         return result;
     }
 
-    public int addTriple(final String sentence) throws SQLException {
-        insertStatement.setString(1, sentence);
+    public int addTriple(final Triple triple) throws SQLException {
+        insertStatement.setString(1, triple.getSentenceText());
         return insertStatement.executeUpdate();
     }
 }
