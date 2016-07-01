@@ -9,17 +9,15 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: shorter name
-public class SubjectPredicateObject {
+public class Triple {
 
     private final String sentenceText;
 
     private final List<String> subjects = new ArrayList<>();
+    private final List<String> relations = new ArrayList<>();
     private final List<String> objects = new ArrayList<>();
 
-    private String predicate;
-
-    public SubjectPredicateObject(final Sentence sentence) {
+    public Triple(final Sentence sentence) {
         sentenceText = sentence.text();
 
         // I tried a couple of different methods to do this and this worked the best and is the most simple
@@ -28,11 +26,11 @@ public class SubjectPredicateObject {
         for (int i = 0; i < words.size(); i++) {
             final String word = words.get(i);
             final String posTag = posTags.get(i);
-            if (predicate == null && isNoun(posTag))
+            if (relations.size() == 0 && isNoun(posTag))
                 subjects.add(word);
-            else if (isVerb(posTag))
-                predicate = word;
-            else if (predicate != null && isNoun(posTag))
+            else if (objects.size() == 0 && isVerb(posTag))
+                relations.add(word);
+            else if (relations.size() > 0 && isNoun(posTag))
                 objects.add(word);
         }
     }
@@ -40,7 +38,7 @@ public class SubjectPredicateObject {
     public static void main(final String[] args) {
         final Document document = new Document(readFile("document.txt"));
         for (final Sentence sentence : document.sentences()) {
-            System.out.println(new SubjectPredicateObject(sentence));
+            System.out.println(new Triple(sentence));
         }
     }
 
@@ -68,8 +66,8 @@ public class SubjectPredicateObject {
         return subjects;
     }
 
-    public String getPredicate() {
-        return predicate;
+    public List<String> getRelations() {
+        return relations;
     }
 
     public List<String> getObjects() {
@@ -80,7 +78,7 @@ public class SubjectPredicateObject {
     public String toString() {
         return "sentenceText='" + sentenceText + '\'' +
                 ", subjects='" + subjects + '\'' +
-                ", predicate='" + predicate + '\'' +
+                ", relations='" + relations + '\'' +
                 ", objects='" + objects + '\'';
     }
 }

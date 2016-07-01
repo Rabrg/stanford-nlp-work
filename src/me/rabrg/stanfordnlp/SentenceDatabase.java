@@ -30,7 +30,7 @@ public class SentenceDatabase {
             database.addSentence("Grandfather left Rosalita and Raoul all his money");
             database.addSentence("They named their daughter Natasha");
 
-            for (final SubjectPredicateObject object : database.getSentences()) {
+            for (final Triple object : database.getSentences()) {
                 System.out.println(object);
             }
         } catch (final SQLException e) {
@@ -38,11 +38,11 @@ public class SentenceDatabase {
         }
     }
 
-    public List<SubjectPredicateObject> getSentences() throws SQLException {
-        final List<SubjectPredicateObject> result = new ArrayList<>();
+    public List<Triple> getSentences() throws SQLException {
+        final List<Triple> result = new ArrayList<>();
         final ResultSet rs = selectStatement.executeQuery();
         while (rs.next()) {
-            result.add(new SubjectPredicateObject(new Sentence(rs.getString("sentence"))));
+            result.add(new Triple(new Sentence(rs.getString("sentence"))));
         }
         return result;
     }
