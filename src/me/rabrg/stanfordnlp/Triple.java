@@ -2,6 +2,7 @@ package me.rabrg.stanfordnlp;
 
 import edu.stanford.nlp.simple.Document;
 import edu.stanford.nlp.simple.Sentence;
+import edu.stanford.nlp.util.Quadruple;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,6 +23,11 @@ public class Triple {
     }
 
     public Triple(final Sentence sentence) {
+        // built-in version
+        for (final Quadruple<String, String, String, Double> tripple : sentence.openie()) {
+            System.out.println(tripple);
+        }
+
         sentenceText = sentence.text();
 
         // I tried a couple of different methods to do this and this worked the best and is the most simple
