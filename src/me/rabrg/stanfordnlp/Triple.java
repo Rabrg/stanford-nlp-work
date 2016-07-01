@@ -17,6 +17,10 @@ public class Triple {
     private final List<String> relations = new ArrayList<>();
     private final List<String> objects = new ArrayList<>();
 
+    public Triple(final String sentenceText) {
+        this(new Sentence(sentenceText));
+    }
+
     public Triple(final Sentence sentence) {
         sentenceText = sentence.text();
 
